@@ -94,6 +94,46 @@ namespace CabInvoiceGenerator
             return new InvoiceSummary(rides.Length, totalFare);
         }
 
+        /// <summary>
+        /// Adds the rides in dictionary with key as a user id 
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="rides">The rides.</param>
+        /// <exception cref="CabInvoiceDay23.CabInvoiceException">Null rides</exception>
+        public void AddRides(string userId, Ride[] rides)
+        {
+            try
+            {
+                rideRepository.AddRide(userId, rides);
+            }
+            catch (CabInvoiceException)
+            {
+                if (rides == null)
+                {
+                    throw new CabInvoiceException(CabInvoiceException.ExceptionType.NULL_RIDES, "Null rides");
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Gets the invoice summary by passing user id into ride repository and then passing rides array to calculate fares.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns></returns>
+        /// <exception cref="CabInvoiceDay23.CabInvoiceException">Invalid user id</exception>
+        public InvoiceSummary GetInvoiceSummary(string userId)
+        {
+            try
+            {
+                return this.CalculateFare(rideRepository.GetRides(userId));
+            }
+            catch
+            {
+                throw new CabInvoiceException(CabInvoiceException.ExceptionType.INVALID_USER_ID, "Invalid user id");
+            }
+        }
+
 
     }
 }
